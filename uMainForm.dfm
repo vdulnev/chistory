@@ -3,7 +3,7 @@ object frmMain: TfrmMain
   Top = 0
   Caption = 'CHistory - Clipboard Manager'
   ClientHeight = 540
-  ClientWidth = 440
+  ClientWidth = 500
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,7 +18,7 @@ object frmMain: TfrmMain
   object lblTitle: TLabel
     Left = 0
     Top = 0
-    Width = 440
+    Width = 500
     Height = 36
     Align = alTop
     Alignment = taCenter
@@ -37,8 +37,8 @@ object frmMain: TfrmMain
   object lbHistory: TListBox
     Left = 0
     Top = 36
-    Width = 440
-    Height = 462
+    Width = 500
+    Height = 443
     Align = alClient
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -54,8 +54,8 @@ object frmMain: TfrmMain
   end
   object pnlBottom: TPanel
     Left = 0
-    Top = 498
-    Width = 440
+    Top = 479
+    Width = 500
     Height = 42
     Align = alBottom
     BevelOuter = bvNone
@@ -64,39 +64,48 @@ object frmMain: TfrmMain
     object btnCopy: TButton
       Left = 8
       Top = 6
-      Width = 120
+      Width = 115
       Height = 30
       Caption = 'Copy Selected'
       TabOrder = 0
       OnClick = btnCopyClick
     end
     object btnClear: TButton
-      Left = 160
+      Left = 131
       Top = 6
-      Width = 100
+      Width = 115
       Height = 30
       Caption = 'Clear All'
       TabOrder = 1
       OnClick = btnClearClick
     end
-    object btnClose: TButton
-      Left = 316
+    object btnHotkey: TButton
+      Left = 254
       Top = 6
-      Width = 116
+      Width = 115
+      Height = 30
+      Caption = 'Set Hotkey...'
+      TabOrder = 2
+      OnClick = btnHotkeyClick
+    end
+    object btnClose: TButton
+      Left = 377
+      Top = 6
+      Width = 115
       Height = 30
       Caption = 'Minimize to Tray'
-      TabOrder = 2
+      TabOrder = 3
       OnClick = btnCloseClick
     end
   end
   object sbStatus: TStatusBar
     Left = 0
     Top = 521
-    Width = 440
+    Width = 500
     Height = 19
     Panels = <>
     SimplePanel = True
-    SimpleText = ' 0 item(s) in history'
+    SimpleText = ' 0 item(s)  |  Hotkey: none'
   end
   object TrayIcon: TTrayIcon
     BalloonFlags = bfInfo
@@ -106,11 +115,11 @@ object frmMain: TfrmMain
     PopupMenu = pmTray
     Visible = False
     OnDblClick = TrayIconDblClick
-    Left = 352
+    Left = 408
     Top = 56
   end
   object pmTray: TPopupMenu
-    Left = 352
+    Left = 408
     Top = 104
     object miRestore: TMenuItem
       Caption = 'Restore'
@@ -127,7 +136,7 @@ object frmMain: TfrmMain
   end
   object pmHistory: TPopupMenu
     OnPopup = pmHistoryPopup
-    Left = 352
+    Left = 408
     Top = 152
     object miCopyItem: TMenuItem
       Caption = 'Copy to Clipboard'

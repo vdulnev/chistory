@@ -2,7 +2,8 @@ program CHistory;
 
 uses
   Vcl.Forms,
-  uMainForm in 'uMainForm.pas' {frmMain};
+  uMainForm in 'uMainForm.pas' {frmMain},
+  uHotkeyDialog in 'uHotkeyDialog.pas' {dlgHotkey};
 
 {$R *.res}
 

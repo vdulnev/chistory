@@ -4,12 +4,14 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Classes,
-  System.Math, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
-  Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.Menus, Vcl.Clipbrd;
+  System.Math, System.IniFiles, System.UITypes, Vcl.Graphics, Vcl.Controls, Vcl.Forms,
+  Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.Menus,
+  Vcl.Clipbrd, uHotkeyDialog;
 
 const
   WM_CLIPBOARDUPDATE = $031D;
-  MAX_HISTORY = 100;
+  MAX_HISTORY        = 100;
+  HOTKEY_ID          = 1;
 
 type
   TfrmMain = class(TForm)
@@ -18,6 +20,7 @@ type
     pnlBottom: TPanel;
     btnCopy: TButton;
     btnClear: TButton;
+    btnHotkey: TButton;
     btnClose: TButton;
     sbStatus: TStatusBar;
     TrayIcon: TTrayIcon;
@@ -35,6 +38,7 @@ type
     procedure lbHistoryKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure btnCopyClick(Sender: TObject);
     procedure btnClearClick(Sender: TObject);
+    procedure btnHotkeyClick(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
     procedure TrayIconDblClick(Sender: TObject);
     procedure miRestoreClick(Sender: TObject);
@@ -43,15 +47,22 @@ type
     procedure miDeleteItemClick(Sender: TObject);
     procedure pmHistoryPopup(Sender: TObject);
   private
-    FHistory: TStringList;
-    FIgnoreNext: Boolean;
+    FHistory:       TStringList;
+    FIgnoreNext:    Boolean;
+    FHotKeyShortCut: TShortCut;
     procedure WMClipboardUpdate(var Msg: TMessage); message WM_CLIPBOARDUPDATE;
+    procedure WMHotKey(var Msg: TMessage);          message WM_HOTKEY;
     procedure AddToHistory(const S: string);
     procedure DeleteHistoryItem(Index: Integer);
     procedure CopyItemToClipboard(Index: Integer);
     procedure UpdateListBox;
     procedure UpdateStatus;
-    function GetItemPreview(const S: string): string;
+    function  GetItemPreview(const S: string): string;
+    procedure RegisterAppHotKey;
+    procedure UnregisterAppHotKey;
+    procedure LoadSettings;
+    procedure SaveSettings;
+    function  SettingsPath: string;
   end;
 
 var
@@ -61,23 +72,96 @@ implementation
 
 {$R *.dfm}
 
+// -----------------------------------------------------------------------
+// Settings helpers
+// -----------------------------------------------------------------------
+
+function TfrmMain.SettingsPath: string;
+begin
+  Result := IncludeTrailingPathDelimiter(GetEnvironmentVariable('APPDATA'))
+            + 'CHistory\settings.ini';
+end;
+
+procedure TfrmMain.LoadSettings;
+var
+  Ini: TIniFile;
+begin
+  ForceDirectories(ExtractFileDir(SettingsPath));
+  Ini := TIniFile.Create(SettingsPath);
+  try
+    FHotKeyShortCut := Ini.ReadInteger('Hotkey', 'ShortCut', 0);
+  finally
+    Ini.Free;
+  end;
+end;
+
+procedure TfrmMain.SaveSettings;
+var
+  Ini: TIniFile;
+begin
+  Ini := TIniFile.Create(SettingsPath);
+  try
+    Ini.WriteInteger('Hotkey', 'ShortCut', FHotKeyShortCut);
+  finally
+    Ini.Free;
+  end;
+end;
+
+// -----------------------------------------------------------------------
+// Hotkey registration
+// -----------------------------------------------------------------------
+
+procedure TfrmMain.RegisterAppHotKey;
+var
+  Key:   Word;
+  Shift: TShiftState;
+  Mods:  UINT;
+begin
+  UnregisterHotKey(Handle, HOTKEY_ID);
+  if FHotKeyShortCut = 0 then
+    Exit;
+
+  ShortCutToKey(FHotKeyShortCut, Key, Shift);
+  if Key = 0 then Exit;
+
+  Mods := 0;
+  if ssShift in Shift then Mods := Mods or MOD_SHIFT;
+  if ssCtrl  in Shift then Mods := Mods or MOD_CONTROL;
+  if ssAlt   in Shift then Mods := Mods or MOD_ALT;
+
+  if not RegisterHotKey(Handle, HOTKEY_ID, Mods, Key) then
+    MessageDlg('Could not register hotkey — it may already be in use by another application.',
+      mtWarning, [mbOK], 0);
+end;
+
+procedure TfrmMain.UnregisterAppHotKey;
+begin
+  UnregisterHotKey(Handle, HOTKEY_ID);
+end;
+
+// -----------------------------------------------------------------------
+// Form lifetime
+// -----------------------------------------------------------------------
+
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
-  FHistory := TStringList.Create;
+  FHistory    := TStringList.Create;
   FIgnoreNext := False;
   AddClipboardFormatListener(Handle);
+  LoadSettings;
+  RegisterAppHotKey;
   UpdateStatus;
 end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
+  UnregisterAppHotKey;
   RemoveClipboardFormatListener(Handle);
   FHistory.Free;
 end;
 
 procedure TfrmMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  // Minimize to system tray instead of closing
   Action := caNone;
   Hide;
   TrayIcon.Visible := True;
@@ -111,6 +195,23 @@ begin
 end;
 
 // -----------------------------------------------------------------------
+// Global hotkey
+// -----------------------------------------------------------------------
+
+procedure TfrmMain.WMHotKey(var Msg: TMessage);
+begin
+  if Msg.WParam <> HOTKEY_ID then Exit;
+
+  if not Visible or (WindowState = wsMinimized) then
+    miRestoreClick(nil)
+  else
+  begin
+    SetForegroundWindow(Handle);
+    BringToFront;
+  end;
+end;
+
+// -----------------------------------------------------------------------
 // History management
 // -----------------------------------------------------------------------
 
@@ -118,18 +219,15 @@ procedure TfrmMain.AddToHistory(const S: string);
 var
   I: Integer;
 begin
-  // Already at the top — nothing to do
   if (FHistory.Count > 0) and (FHistory[0] = S) then
     Exit;
 
-  // Move to top if already exists elsewhere
   I := FHistory.IndexOf(S);
   if I > 0 then
     FHistory.Delete(I);
 
   FHistory.Insert(0, S);
 
-  // Trim to limit
   while FHistory.Count > MAX_HISTORY do
     FHistory.Delete(FHistory.Count - 1);
 
@@ -139,8 +237,7 @@ end;
 
 procedure TfrmMain.DeleteHistoryItem(Index: Integer);
 begin
-  if (Index < 0) or (Index >= FHistory.Count) then
-    Exit;
+  if (Index < 0) or (Index >= FHistory.Count) then Exit;
   FHistory.Delete(Index);
   UpdateListBox;
   UpdateStatus;
@@ -150,13 +247,9 @@ end;
 
 procedure TfrmMain.CopyItemToClipboard(Index: Integer);
 begin
-  if (Index < 0) or (Index >= FHistory.Count) then
-    Exit;
-
+  if (Index < 0) or (Index >= FHistory.Count) then Exit;
   FIgnoreNext := True;
   Clipboard.AsText := FHistory[Index];
-
-  // Move accessed item to top
   if Index > 0 then
   begin
     FHistory.Move(Index, 0);
@@ -198,9 +291,15 @@ begin
 end;
 
 procedure TfrmMain.UpdateStatus;
+var
+  HKText: string;
 begin
-  sbStatus.SimpleText := Format(' %d item(s) in history  |  Max: %d',
-    [FHistory.Count, MAX_HISTORY]);
+  if FHotKeyShortCut <> 0 then
+    HKText := ShortCutToText(FHotKeyShortCut)
+  else
+    HKText := 'none';
+  sbStatus.SimpleText := Format(' %d item(s)  |  Hotkey: %s  |  Max: %d',
+    [FHistory.Count, HKText, MAX_HISTORY]);
 end;
 
 // -----------------------------------------------------------------------
@@ -241,9 +340,28 @@ begin
   end;
 end;
 
+procedure TfrmMain.btnHotkeyClick(Sender: TObject);
+var
+  Dlg: TdlgHotkey;
+begin
+  Dlg := TdlgHotkey.Create(Self);
+  try
+    Dlg.hkInput.HotKey := FHotKeyShortCut;
+    if Dlg.ShowModal = mrOk then
+    begin
+      FHotKeyShortCut := Dlg.hkInput.HotKey;
+      RegisterAppHotKey;
+      SaveSettings;
+      UpdateStatus;
+    end;
+  finally
+    Dlg.Free;
+  end;
+end;
+
 procedure TfrmMain.btnCloseClick(Sender: TObject);
 begin
-  Close; // triggers FormClose -> minimize to tray
+  Close;
 end;
 
 // -----------------------------------------------------------------------
@@ -278,7 +396,7 @@ var
   HasSel: Boolean;
 begin
   HasSel := lbHistory.ItemIndex >= 0;
-  miCopyItem.Enabled  := HasSel;
+  miCopyItem.Enabled   := HasSel;
   miDeleteItem.Enabled := HasSel;
 end;
 

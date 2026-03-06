@@ -49,6 +49,9 @@
     <DCCReference Include="uMainForm.pas">
       <Form>frmMain</Form>
     </DCCReference>
+    <DCCReference Include="uHotkeyDialog.pas">
+      <Form>dlgHotkey</Form>
+    </DCCReference>
     <BuildConfiguration Include="Release">
       <Key>Cfg_1</Key>
     </BuildConfiguration>
