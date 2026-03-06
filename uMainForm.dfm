@@ -63,7 +63,7 @@ object frmMain: TfrmMain
       object spTop1: TPanel
         Left = 96
         Top = 6
-        Width = 12
+        Width = 42
         Height = 40
         Align = alLeft
         BevelOuter = bvNone
@@ -73,7 +73,7 @@ object frmMain: TfrmMain
         TabOrder = 0
       end
       object lblDirectPaste: TLabel
-        Left = 108
+        Left = 138
         Top = 6
         Width = 80
         Height = 40
@@ -94,9 +94,9 @@ object frmMain: TfrmMain
         OnMouseLeave = lblMouseLeave
       end
       object spTop2: TPanel
-        Left = 188
+        Left = 218
         Top = 6
-        Width = 12
+        Width = 43
         Height = 40
         Align = alLeft
         BevelOuter = bvNone
@@ -106,7 +106,7 @@ object frmMain: TfrmMain
         TabOrder = 1
       end
       object lblQuickLook: TLabel
-        Left = 200
+        Left = 261
         Top = 6
         Width = 80
         Height = 40
@@ -127,9 +127,9 @@ object frmMain: TfrmMain
         OnMouseLeave = lblMouseLeave
       end
       object spTop3: TPanel
-        Left = 280
+        Left = 341
         Top = 6
-        Width = 12
+        Width = 43
         Height = 40
         Align = alLeft
         BevelOuter = bvNone
@@ -137,39 +137,6 @@ object frmMain: TfrmMain
         Color = $00202020
         ParentBackground = False
         TabOrder = 2
-      end
-      object lblPlainText: TLabel
-        Left = 292
-        Top = 6
-        Width = 80
-        Height = 40
-        Align = alLeft
-        Alignment = taCenter
-        Caption = 'Plain Text'
-        Color = $00202020
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = $00AAAAAA
-        Font.Height = -11
-        Font.Name = 'Segoe UI'
-        Font.Style = []
-        Layout = tlCenter
-        ParentFont = False
-        Transparent = False
-        OnClick = lblPlainTextClick
-        OnMouseEnter = lblMouseEnter
-        OnMouseLeave = lblMouseLeave
-      end
-      object spTop4: TPanel
-        Left = 372
-        Top = 6
-        Width = 12
-        Height = 40
-        Align = alLeft
-        BevelOuter = bvNone
-        Caption = ' '
-        Color = $00202020
-        ParentBackground = False
-        TabOrder = 3
       end
       object lblSettings: TLabel
         Left = 384

@@ -43,7 +43,6 @@ type
     lblCopy:        TLabel;
     lblDirectPaste: TLabel;
     lblQuickLook:   TLabel;
-    lblPlainText:   TLabel;
     lblSettings:    TLabel;
     pnlSepToolbar:  TPanel;
     pnlTabs:        TPanel;
@@ -76,7 +75,6 @@ type
     procedure lblCopyClick(Sender: TObject);
     procedure lblDirectPasteClick(Sender: TObject);
     procedure lblQuickLookClick(Sender: TObject);
-    procedure lblPlainTextClick(Sender: TObject);
     procedure lblSettingsClick(Sender: TObject);
     procedure lblTabAllClick(Sender: TObject);
     procedure lblTabFavClick(Sender: TObject);
@@ -160,7 +158,6 @@ begin
   StyleToolBtn(lblCopy);
   StyleToolBtn(lblDirectPaste);
   StyleToolBtn(lblQuickLook);
-  StyleToolBtn(lblPlainText);
   StyleToolBtn(lblSettings, 14);
 
   // Tab labels base style
@@ -655,11 +652,6 @@ begin
   I := lbHistory.ItemIndex;
   if (I < 0) or (I >= FFiltered.Count) then Exit;
   ShowMessage(GetFilteredItem(I).Text);
-end;
-
-procedure TfrmMain.lblPlainTextClick(Sender: TObject);
-begin
-  CopyItemToClipboard(lbHistory.ItemIndex);
 end;
 
 procedure TfrmMain.lblSettingsClick(Sender: TObject);
