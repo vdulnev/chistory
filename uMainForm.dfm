@@ -25,105 +25,173 @@ object frmMain: TfrmMain
     Color = $00202020
     ParentBackground = False
     TabOrder = 0
-    object lblCopy: TLabel
+    object pnlTopItems: TPanel
       Left = 0
       Top = 0
-      Width = 96
+      Width = 480
       Height = 52
-      Alignment = taCenter
-      Caption = 'Copy'
+      Align = alClient
+      BevelOuter = bvNone
       Color = $00202020
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = $00AAAAAA
-      Font.Height = -11
-      Font.Name = 'Segoe UI'
-      Font.Style = []
-      Layout = tlCenter
-      ParentFont = False
-      Transparent = False
-      OnClick = lblCopyClick
-      OnMouseEnter = lblMouseEnter
-      OnMouseLeave = lblMouseLeave
-    end
-    object lblDirectPaste: TLabel
-      Left = 96
-      Top = 0
-      Width = 96
-      Height = 52
-      Alignment = taCenter
-      Caption = 'Direct Paste'
-      Color = $00202020
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = $00AAAAAA
-      Font.Height = -11
-      Font.Name = 'Segoe UI'
-      Font.Style = []
-      Layout = tlCenter
-      ParentFont = False
-      Transparent = False
-      OnClick = lblDirectPasteClick
-      OnMouseEnter = lblMouseEnter
-      OnMouseLeave = lblMouseLeave
-    end
-    object lblQuickLook: TLabel
-      Left = 192
-      Top = 0
-      Width = 96
-      Height = 52
-      Alignment = taCenter
-      Caption = 'Quick Look'
-      Color = $00202020
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = $00AAAAAA
-      Font.Height = -11
-      Font.Name = 'Segoe UI'
-      Font.Style = []
-      Layout = tlCenter
-      ParentFont = False
-      Transparent = False
-      OnClick = lblQuickLookClick
-      OnMouseEnter = lblMouseEnter
-      OnMouseLeave = lblMouseLeave
-    end
-    object lblPlainText: TLabel
-      Left = 288
-      Top = 0
-      Width = 96
-      Height = 52
-      Alignment = taCenter
-      Caption = 'Plain Text'
-      Color = $00202020
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = $00AAAAAA
-      Font.Height = -11
-      Font.Name = 'Segoe UI'
-      Font.Style = []
-      Layout = tlCenter
-      ParentFont = False
-      Transparent = False
-      OnClick = lblPlainTextClick
-      OnMouseEnter = lblMouseEnter
-      OnMouseLeave = lblMouseLeave
-    end
-    object lblSettings: TLabel
-      Left = 384
-      Top = 0
-      Width = 96
-      Height = 52
-      Alignment = taCenter
-      Caption = #9881
-      Color = $00202020
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = $00AAAAAA
-      Font.Height = -16
-      Font.Name = 'Segoe UI'
-      Font.Style = []
-      Layout = tlCenter
-      ParentFont = False
-      Transparent = False
-      OnClick = lblSettingsClick
-      OnMouseEnter = lblMouseEnter
-      OnMouseLeave = lblMouseLeave
+      ParentBackground = False
+      Padding.Left = 16
+      Padding.Top = 6
+      Padding.Right = 16
+      Padding.Bottom = 6
+      TabOrder = 0
+      object lblCopy: TLabel
+        Left = 16
+        Top = 6
+        Width = 80
+        Height = 40
+        Align = alLeft
+        Alignment = taCenter
+        Caption = 'Copy'
+        Color = $00202020
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = $00AAAAAA
+        Font.Height = -11
+        Font.Name = 'Segoe UI'
+        Font.Style = []
+        Layout = tlCenter
+        ParentFont = False
+        Transparent = False
+        OnClick = lblCopyClick
+        OnMouseEnter = lblMouseEnter
+        OnMouseLeave = lblMouseLeave
+      end
+      object spTop1: TPanel
+        Left = 96
+        Top = 6
+        Width = 12
+        Height = 40
+        Align = alLeft
+        BevelOuter = bvNone
+        Caption = ' '
+        Color = $00202020
+        ParentBackground = False
+        TabOrder = 0
+      end
+      object lblDirectPaste: TLabel
+        Left = 108
+        Top = 6
+        Width = 80
+        Height = 40
+        Align = alLeft
+        Alignment = taCenter
+        Caption = 'Direct Paste'
+        Color = $00202020
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = $00AAAAAA
+        Font.Height = -11
+        Font.Name = 'Segoe UI'
+        Font.Style = []
+        Layout = tlCenter
+        ParentFont = False
+        Transparent = False
+        OnClick = lblDirectPasteClick
+        OnMouseEnter = lblMouseEnter
+        OnMouseLeave = lblMouseLeave
+      end
+      object spTop2: TPanel
+        Left = 188
+        Top = 6
+        Width = 12
+        Height = 40
+        Align = alLeft
+        BevelOuter = bvNone
+        Caption = ' '
+        Color = $00202020
+        ParentBackground = False
+        TabOrder = 1
+      end
+      object lblQuickLook: TLabel
+        Left = 200
+        Top = 6
+        Width = 80
+        Height = 40
+        Align = alLeft
+        Alignment = taCenter
+        Caption = 'Quick Look'
+        Color = $00202020
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = $00AAAAAA
+        Font.Height = -11
+        Font.Name = 'Segoe UI'
+        Font.Style = []
+        Layout = tlCenter
+        ParentFont = False
+        Transparent = False
+        OnClick = lblQuickLookClick
+        OnMouseEnter = lblMouseEnter
+        OnMouseLeave = lblMouseLeave
+      end
+      object spTop3: TPanel
+        Left = 280
+        Top = 6
+        Width = 12
+        Height = 40
+        Align = alLeft
+        BevelOuter = bvNone
+        Caption = ' '
+        Color = $00202020
+        ParentBackground = False
+        TabOrder = 2
+      end
+      object lblPlainText: TLabel
+        Left = 292
+        Top = 6
+        Width = 80
+        Height = 40
+        Align = alLeft
+        Alignment = taCenter
+        Caption = 'Plain Text'
+        Color = $00202020
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = $00AAAAAA
+        Font.Height = -11
+        Font.Name = 'Segoe UI'
+        Font.Style = []
+        Layout = tlCenter
+        ParentFont = False
+        Transparent = False
+        OnClick = lblPlainTextClick
+        OnMouseEnter = lblMouseEnter
+        OnMouseLeave = lblMouseLeave
+      end
+      object spTop4: TPanel
+        Left = 372
+        Top = 6
+        Width = 12
+        Height = 40
+        Align = alLeft
+        BevelOuter = bvNone
+        Caption = ' '
+        Color = $00202020
+        ParentBackground = False
+        TabOrder = 3
+      end
+      object lblSettings: TLabel
+        Left = 384
+        Top = 6
+        Width = 80
+        Height = 40
+        Align = alLeft
+        Alignment = taCenter
+        Caption = #9881
+        Color = $00202020
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = $00AAAAAA
+        Font.Height = -16
+        Font.Name = 'Segoe UI'
+        Font.Style = []
+        Layout = tlCenter
+        ParentFont = False
+        Transparent = False
+        OnClick = lblSettingsClick
+        OnMouseEnter = lblMouseEnter
+        OnMouseLeave = lblMouseLeave
+      end
     end
   end
   object pnlSepToolbar: TPanel
@@ -147,41 +215,70 @@ object frmMain: TfrmMain
     Color = $00202020
     ParentBackground = False
     TabOrder = 2
-    object lblTabAll: TLabel
+    object pnlTabItems: TPanel
       Left = 0
       Top = 0
-      Width = 240
+      Width = 480
       Height = 34
-      Alignment = taCenter
-      Caption = 'All'
-      Color = $003C3C3C
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = $00F0F0F0
-      Font.Height = -12
-      Font.Name = 'Segoe UI'
-      Font.Style = [fsBold]
-      Layout = tlCenter
-      ParentFont = False
-      Transparent = False
-      OnClick = lblTabAllClick
-    end
-    object lblTabFav: TLabel
-      Left = 240
-      Top = 0
-      Width = 240
-      Height = 34
-      Alignment = taCenter
-      Caption = 'Favorites '#9729
+      Align = alClient
+      BevelOuter = bvNone
       Color = $00202020
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = $00888888
-      Font.Height = -12
-      Font.Name = 'Segoe UI'
-      Font.Style = []
-      Layout = tlCenter
-      ParentFont = False
-      Transparent = False
-      OnClick = lblTabFavClick
+      ParentBackground = False
+      Padding.Left = 16
+      Padding.Top = 4
+      Padding.Right = 16
+      Padding.Bottom = 4
+      TabOrder = 0
+      object lblTabAll: TLabel
+        Left = 16
+        Top = 4
+        Width = 218
+        Height = 26
+        Align = alLeft
+        Alignment = taCenter
+        Caption = 'All'
+        Color = $003C3C3C
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = $00F0F0F0
+        Font.Height = -12
+        Font.Name = 'Segoe UI'
+        Font.Style = [fsBold]
+        Layout = tlCenter
+        ParentFont = False
+        Transparent = False
+        OnClick = lblTabAllClick
+      end
+      object spTab: TPanel
+        Left = 234
+        Top = 4
+        Width = 12
+        Height = 26
+        Align = alLeft
+        BevelOuter = bvNone
+        Caption = ' '
+        Color = $00202020
+        ParentBackground = False
+        TabOrder = 0
+      end
+      object lblTabFav: TLabel
+        Left = 246
+        Top = 4
+        Width = 218
+        Height = 26
+        Align = alLeft
+        Alignment = taCenter
+        Caption = 'Favorites '#9729
+        Color = $00202020
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = $00888888
+        Font.Height = -12
+        Font.Name = 'Segoe UI'
+        Font.Style = []
+        Layout = tlCenter
+        ParentFont = False
+        Transparent = False
+        OnClick = lblTabFavClick
+      end
     end
   end
   object pnlSepTabs: TPanel
