@@ -5,6 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Classes,
   System.Math, System.IniFiles, System.UITypes, System.Generics.Collections,
+  System.NetEncoding,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
   Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.Menus, Vcl.Clipbrd, uHotkeyDialog;
 
@@ -115,6 +116,8 @@ type
     procedure UnregisterAppHotKey;
     procedure LoadSettings;
     procedure SaveSettings;
+    procedure LoadHistory;
+    procedure SaveHistory;
     function  SettingsPath: string;
   end;
 
@@ -226,6 +229,7 @@ begin
   AddClipboardFormatListener(Handle);
   ApplyDarkTheme;
   LoadSettings;
+  LoadHistory;
   RegisterAppHotKey;
 end;
 
@@ -233,6 +237,8 @@ procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
   UnregisterAppHotKey;
   RemoveClipboardFormatListener(Handle);
+  SaveHistory;
+  SaveSettings;
   FFiltered.Free;
   FItems.Free;
 end;
@@ -311,6 +317,7 @@ begin
     FItems.Delete(FItems.Count - 1);
 
   RebuildFilter;
+  SaveHistory;
 end;
 
 procedure TfrmMain.DeleteHistoryItem(FilteredIdx: Integer);
@@ -321,6 +328,7 @@ begin
   if RealIdx < 0 then Exit;
   FItems.Delete(RealIdx);
   RebuildFilter;
+  SaveHistory;
   if lbHistory.Count > 0 then
     lbHistory.ItemIndex := Min(FilteredIdx, lbHistory.Count - 1);
 end;
@@ -336,6 +344,7 @@ begin
   Item.IsFavorite := not Item.IsFavorite;
   FItems[RealIdx] := Item;
   RebuildFilter;
+  SaveHistory;
 end;
 
 procedure TfrmMain.CopyItemToClipboard(FilteredIdx: Integer);
@@ -352,6 +361,7 @@ begin
   FItems.Delete(RealIdx);
   FItems.Insert(0, Item);
   RebuildFilter;
+  SaveHistory;
   lbHistory.ItemIndex := 0;
 end;
 
@@ -745,6 +755,8 @@ end;
 procedure TfrmMain.miExitClick(Sender: TObject);
 begin
   TrayIcon.Visible := False;
+  SaveHistory;
+  SaveSettings;
   Application.Terminate;
 end;
 
@@ -778,6 +790,65 @@ begin
   Ini := TIniFile.Create(SettingsPath);
   try
     Ini.WriteInteger('Hotkey', 'ShortCut', FHotKeyShortCut);
+  finally
+    Ini.Free;
+  end;
+end;
+
+procedure TfrmMain.LoadHistory;
+var
+  Ini: TIniFile;
+  I, Cnt: Integer;
+  Item: TClipItem;
+  EncText: string;
+begin
+  Ini := TIniFile.Create(SettingsPath);
+  try
+    Cnt := Max(0, Ini.ReadInteger('History', 'Count', 0));
+    for I := 0 to Cnt - 1 do
+    begin
+      EncText := Ini.ReadString('History', Format('Item%d_Text', [I]), '');
+      if EncText = '' then
+        Continue;
+      try
+        Item.Text := TNetEncoding.Base64.Decode(EncText);
+      except
+        Continue;
+      end;
+      if Item.Text.Trim = '' then
+        Continue;
+      Item.AddedAt := Ini.ReadFloat('History', Format('Item%d_AddedAt', [I]), Now);
+      Item.IsFavorite := Ini.ReadBool('History', Format('Item%d_Favorite', [I]), False);
+      FItems.Add(Item);
+      if FItems.Count >= MAX_HISTORY then
+        Break;
+    end;
+  finally
+    Ini.Free;
+  end;
+  RebuildFilter;
+end;
+
+procedure TfrmMain.SaveHistory;
+var
+  Ini: TIniFile;
+  I, Cnt: Integer;
+  Item: TClipItem;
+begin
+  ForceDirectories(ExtractFileDir(SettingsPath));
+  Ini := TIniFile.Create(SettingsPath);
+  try
+    Ini.EraseSection('History');
+    Cnt := Min(FItems.Count, MAX_HISTORY);
+    Ini.WriteInteger('History', 'Count', Cnt);
+    for I := 0 to Cnt - 1 do
+    begin
+      Item := FItems[I];
+      Ini.WriteString('History', Format('Item%d_Text', [I]),
+        TNetEncoding.Base64.Encode(Item.Text));
+      Ini.WriteFloat('History', Format('Item%d_AddedAt', [I]), Item.AddedAt);
+      Ini.WriteBool('History', Format('Item%d_Favorite', [I]), Item.IsFavorite);
+    end;
   finally
     Ini.Free;
   end;
