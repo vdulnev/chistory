@@ -1,0 +1,61 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}</ProjectGuid>
+    <ProjectVersion>20.1</ProjectVersion>
+    <FrameworkType>VCL</FrameworkType>
+    <MainSource>CHistory.dpr</MainSource>
+    <Base>True</Base>
+    <Config Condition="'$(Config)'==''">Debug</Config>
+    <Platform Condition="'$(Platform)'==''">Win32</Platform>
+    <TargetedPlatforms>1</TargetedPlatforms>
+    <AppType>Application</AppType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
+    <DCC_DcuOutput>.\$(Platform)\$(Config)</DCC_DcuOutput>
+    <DCC_ExeOutput>.\$(Platform)\$(Config)</DCC_ExeOutput>
+    <DCC_E>False</DCC_E>
+    <DCC_N>False</DCC_N>
+    <DCC_S>False</DCC_S>
+    <DCC_F>False</DCC_F>
+    <DCC_K>False</DCC_K>
+    <DCC_UsePackage>rtl;vcl;vclimg;vclwinx;VclSmp;dbrtl;vcldb;xmlrtl;vclx;inet;vclactnband;vcldsnap;dbexpress;dsnap;IndyCore;IndySystem;IndyProtocols;inetdb;inetdbbde;soaprtl;Datasnap;bindengine;bindcomp;bindcompdbx;bindcompvcl;fmx;fmxase;fmxdb;fmxdae;rtl;$(DCC_UsePackage)</DCC_UsePackage>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Config)'=='Release' or '$(Cfg_1)'!=''">
+    <Cfg_1>True</Cfg_1>
+    <Base>False</Base>
+    <DCC_DebugInformation>0</DCC_DebugInformation>
+    <DCC_Define>RELEASE</DCC_Define>
+    <DCC_LocalDebugSymbols>False</DCC_LocalDebugSymbols>
+    <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Config)'=='Debug' or '$(Cfg_2)'!=''">
+    <Cfg_2>True</Cfg_2>
+    <Base>False</Base>
+    <DCC_DebugInformation>2</DCC_DebugInformation>
+    <DCC_Define>DEBUG</DCC_Define>
+    <DCC_Optimize>False</DCC_Optimize>
+    <DCC_GenerateStackFrames>True</DCC_GenerateStackFrames>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Platform)'=='Win32'">
+    <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
+    <VerInfo_Keys>CompanyName=;FileDescription=CHistory Clipboard Manager;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=CHistory.exe;ProductName=CHistory;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+    <VerInfo_Locale>1033</VerInfo_Locale>
+    <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
+  </PropertyGroup>
+  <ItemGroup>
+    <DelphiCompile Include="$(MainSource)">
+      <MainSource>MainSource</MainSource>
+    </DelphiCompile>
+    <DCCReference Include="uMainForm.pas">
+      <Form>frmMain</Form>
+    </DCCReference>
+    <BuildConfiguration Include="Release">
+      <Key>Cfg_1</Key>
+    </BuildConfiguration>
+    <BuildConfiguration Include="Debug">
+      <Key>Cfg_2</Key>
+    </BuildConfiguration>
+  </ItemGroup>
+  <Import Project="$(BDS)\Bin\CodeGear.Delphi.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Delphi.Targets')"/>
+  <Import Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj" Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj')"/>
+</Project>
