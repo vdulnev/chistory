@@ -93,13 +93,14 @@ type
   private
     FItems:          TList<TClipItem>;
     FFiltered:       TList<Integer>;
-    FIgnoreNext:     Boolean;
+    FIgnoreClipboardText: string;
     FShowFav:        Boolean;
     FSearchText:     string;
     FHotKeyShortCut: TShortCut;
     FPrevWindow:     HWND;
     procedure WMClipboardUpdate(var Msg: TMessage); message WM_CLIPBOARDUPDATE;
     procedure WMHotKey(var Msg: TMessage);          message WM_HOTKEY;
+    procedure WMActivate(var Msg: TWMActivate);     message WM_ACTIVATE;
     procedure AddToHistory(const S: string);
     procedure DeleteHistoryItem(FilteredIdx: Integer);
     procedure CopyItemToClipboard(FilteredIdx: Integer);
@@ -224,7 +225,7 @@ procedure TfrmMain.FormCreate(Sender: TObject);
 begin
   FItems      := TList<TClipItem>.Create;
   FFiltered   := TList<Integer>.Create;
-  FIgnoreNext := False;
+  FIgnoreClipboardText := '';
   FPrevWindow := 0;
   AddClipboardFormatListener(Handle);
   ApplyDarkTheme;
@@ -259,14 +260,14 @@ procedure TfrmMain.WMClipboardUpdate(var Msg: TMessage);
 var
   S: string;
 begin
-  if FIgnoreNext then
-  begin
-    FIgnoreNext := False;
-    Exit;
-  end;
   if Clipboard.HasFormat(CF_UNICODETEXT) or Clipboard.HasFormat(CF_TEXT) then
   try
     S := Clipboard.AsText;
+    if (FIgnoreClipboardText <> '') and (S = FIgnoreClipboardText) then
+    begin
+      FIgnoreClipboardText := '';
+      Exit;
+    end;
     if S.Trim <> '' then
       AddToHistory(S);
   except
@@ -288,6 +289,13 @@ begin
     SetForegroundWindow(Handle);
     BringToFront;
   end;
+end;
+
+procedure TfrmMain.WMActivate(var Msg: TWMActivate);
+begin
+  if (Msg.Active = WA_INACTIVE) and IsWindow(Msg.ActiveWindow) and
+     (Msg.ActiveWindow <> Handle) then
+    FPrevWindow := Msg.ActiveWindow;
 end;
 
 // -----------------------------------------------------------------------
@@ -354,9 +362,13 @@ var
 begin
   RealIdx := GetRealIndex(FilteredIdx);
   if RealIdx < 0 then Exit;
-  FIgnoreNext := True;
   Item := FItems[RealIdx];
-  Clipboard.AsText := Item.Text;
+  try
+    Clipboard.AsText := Item.Text;
+    FIgnoreClipboardText := Item.Text;
+  except
+    Exit;
+  end;
   Item.AddedAt := Now;
   FItems.Delete(RealIdx);
   FItems.Insert(0, Item);
@@ -372,14 +384,21 @@ var
 begin
   RealIdx := GetRealIndex(FilteredIdx);
   if RealIdx < 0 then Exit;
-  FIgnoreNext := True;
-  Clipboard.AsText := FItems[RealIdx].Text;
-  PrevWnd := FPrevWindow;
+  try
+    Clipboard.AsText := FItems[RealIdx].Text;
+    FIgnoreClipboardText := FItems[RealIdx].Text;
+  except
+    Exit;
+  end;
   Hide;
   TrayIcon.Visible := True;
-  if IsWindow(PrevWnd) then
+  PrevWnd := FPrevWindow;
+  if (not IsWindow(PrevWnd)) or (PrevWnd = Handle) then
+    PrevWnd := GetForegroundWindow;
+  if IsWindow(PrevWnd) and (PrevWnd <> Handle) then
   begin
     SetForegroundWindow(PrevWnd);
+    Sleep(40);
     Application.ProcessMessages;
     keybd_event(VK_CONTROL, MapVirtualKey(VK_CONTROL, 0), 0, 0);
     keybd_event(Ord('V'),   MapVirtualKey(Ord('V'),   0), 0, 0);
